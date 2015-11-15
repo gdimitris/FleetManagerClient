@@ -8,13 +8,27 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+
+    private Button startServiceButton;
+    private Button stopServiceButton;
+    private static final long FIVE_MINUTES_IN_MILIS = 300000L;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        startServiceButton = (Button) findViewById(R.id.startServiceButton);
+        startServiceButton.setOnClickListener(this);
+
+        stopServiceButton = (Button) findViewById(R.id.stopServiceButton);
+        stopServiceButton.setOnClickListener(this);
     }
 
     @Override
@@ -45,13 +59,33 @@ public class MainActivity extends AppCompatActivity {
         long currentTimeMillis = System.currentTimeMillis();
 
         AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-        alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, currentTimeMillis, AlarmManager.INTERVAL_FIFTEEN_MINUTES, pendingIntent);
+        alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, currentTimeMillis, FIVE_MINUTES_IN_MILIS, pendingIntent);
     }
 
     public void cancelAlarm(){
         Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
         final PendingIntent pendingIntent = PendingIntent.getBroadcast(this, AlarmReceiver.REQUEST_CODE ,intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
         AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
         alarm.cancel(pendingIntent);
+    }
+
+    private boolean isAlarmActive(){
+        return true;
+    }
+
+    private void checkAlarmStatus(){
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        int viewID = v.getId();
+
+        if(viewID == startServiceButton.getId()){
+            scheduleAlarm();
+        } else if (viewID == stopServiceButton.getId()){
+            cancelAlarm();
+        }
     }
 }
