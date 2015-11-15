@@ -20,6 +20,32 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="Device ID: "
+                android:id="@+id/textView0"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true"
+                android:textSize="17dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="device id"
+                android:id="@+id/deviceIDTextView"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true"
+                android:textSize="17dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20px">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="Internet Access: "
                 android:id="@+id/textView"
                 android:layout_alignParentBottom="true"
@@ -84,6 +110,32 @@
                 android:layout_height="wrap_content"
                 android:text="status"
                 android:id="@+id/fleetManagerStatus"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true"
+                android:textSize="17dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20px">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Current Position: "
+                android:id="@+id/textView4"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true"
+                android:textSize="17dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-"
+                android:id="@+id/currentPositionTextView"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentStart="true"
                 android:textSize="17dp" />

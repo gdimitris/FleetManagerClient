@@ -3,6 +3,9 @@
     package="com.android.dimitris.fleetmanagerandroid" >
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -22,6 +25,9 @@
         <receiver
             android:name=".AlarmReceiver"
             android:process=":remote">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"></action>
+            </intent-filter>
 
         </receiver>
 
@@ -30,6 +36,8 @@
             android:exported="false">
 
         </service>
+
+        <service android:name=".LocationTrackingService"/>
     </application>
 
 </manifest>

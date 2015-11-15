@@ -1,13 +1,17 @@
 package com.android.dimitris.fleetmanagerandroid;
 
 import android.app.AlarmManager;
+import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.location.Location;
 import android.location.LocationManager;
+import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -18,29 +22,46 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-
     private Button startServiceButton;
     private Button stopServiceButton;
     private TextView fleetManagerStatus;
     private TextView internetStatus;
     private TextView locationStatus;
-    private static final long FIVE_MINUTES_IN_MILLIS = 300000L;
+    private TextView currentLocation;
+    private TextView deviceID;
 
+
+    private final int NOTIFICATION_ID = 26373;
+    private LocationReceiver locationReceiver;
+    private LocationTrackingService locationTrackingService;
+    private static final long FIVE_MINUTES_IN_MILLIS = 300000L;
+    private Notification serviceNotification;
+    private Intent startServiceIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //locationReceiver = new LocationReceiver(this);
+        serviceNotification = initializeNotification("Location Tracker", "Current Location: None");
+
+
+        locationTrackingService = new LocationTrackingService();
         fleetManagerStatus = (TextView) findViewById(R.id.fleetManagerStatus);
         internetStatus = (TextView) findViewById(R.id.internetAccessStatus);
         locationStatus = (TextView) findViewById(R.id.locationServiceStatus);
+        currentLocation = (TextView) findViewById(R.id.currentPositionTextView);
+        deviceID = (TextView) findViewById(R.id.deviceIDTextView);
+        deviceID.setText(PublicHelpers.getDeviceUniqueID(getContentResolver()));
 
         startServiceButton = (Button) findViewById(R.id.startServiceButton);
         startServiceButton.setOnClickListener(this);
 
         stopServiceButton = (Button) findViewById(R.id.stopServiceButton);
         stopServiceButton.setOnClickListener(this);
+
+
 
         checkAllServices();
     }
@@ -131,6 +152,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         checkNetworkStatus();
         checkLocationStatus();
         checkAlarmStatus();
+        //updatePositionLabel();
+    }
+
+    private void updatePositionLabel(){
+        Location location = locationReceiver.getLocation();
+        currentLocation.setText(location.getLatitude() + ", " + location.getLongitude());
     }
 
     private void setLabelStatusEnabled(TextView textView){
@@ -148,10 +175,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int viewID = v.getId();
 
         if(viewID == startServiceButton.getId()){
-            scheduleAlarm();
+            //scheduleAlarm();
+            startServiceIntent = new Intent(this, LocationTrackingService.class);
+            startService(startServiceIntent);
+            //locationTrackingService.startForeground(NOTIFICATION_ID,serviceNotification);
         } else if (viewID == stopServiceButton.getId()){
-            cancelAlarm();
+            //cancelAlarm();
+            //locationTrackingService.stopForeground(true);
+            locationTrackingService.stopSelf();
         }
-        checkAllServices();
+        //checkAllServices();
+    }
+
+    private Notification initializeNotification(String title, String body){
+        Notification.Builder mBuilder = new Notification.Builder(this);
+        Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+        mBuilder.setSmallIcon(R.mipmap.ic_launcher)
+                .setOngoing(true)
+                .setContentTitle(title)
+                .setContentText(body)
+                .setPriority(Notification.PRIORITY_MAX)
+                .setSound(soundUri)
+                .setDefaults(Notification.DEFAULT_ALL);
+
+        return mBuilder.build();
     }
 }
