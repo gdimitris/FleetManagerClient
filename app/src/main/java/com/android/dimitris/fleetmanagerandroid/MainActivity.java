@@ -4,19 +4,27 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
 
     private Button startServiceButton;
     private Button stopServiceButton;
-    private static final long FIVE_MINUTES_IN_MILIS = 300000L;
+    private TextView fleetManagerStatus;
+    private TextView internetStatus;
+    private TextView locationStatus;
+    private static final long FIVE_MINUTES_IN_MILLIS = 300000L;
 
 
     @Override
@@ -24,11 +32,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        fleetManagerStatus = (TextView) findViewById(R.id.fleetManagerStatus);
+        internetStatus = (TextView) findViewById(R.id.internetAccessStatus);
+        locationStatus = (TextView) findViewById(R.id.locationServiceStatus);
+
         startServiceButton = (Button) findViewById(R.id.startServiceButton);
         startServiceButton.setOnClickListener(this);
 
         stopServiceButton = (Button) findViewById(R.id.stopServiceButton);
         stopServiceButton.setOnClickListener(this);
+
+        checkAllServices();
     }
 
     @Override
@@ -59,23 +73,74 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         long currentTimeMillis = System.currentTimeMillis();
 
         AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-        alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, currentTimeMillis, FIVE_MINUTES_IN_MILIS, pendingIntent);
+        alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, currentTimeMillis, FIVE_MINUTES_IN_MILLIS, pendingIntent);
     }
 
     public void cancelAlarm(){
         Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
-        final PendingIntent pendingIntent = PendingIntent.getBroadcast(this, AlarmReceiver.REQUEST_CODE ,intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        final PendingIntent pendingIntent = PendingIntent.getBroadcast(this, AlarmReceiver.REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-        alarm.cancel(pendingIntent);
+
+        if (pendingIntent != null) {
+            alarm.cancel(pendingIntent);
+            pendingIntent.cancel();
+        }
     }
 
     private boolean isAlarmActive(){
-        return true;
+        Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, AlarmReceiver.REQUEST_CODE, intent, PendingIntent.FLAG_NO_CREATE);
+
+        return ( pendingIntent!= null);
+    }
+
+    private boolean isNetworkActive(){
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    private boolean isLocationServiceActive(){
+        LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 
     private void checkAlarmStatus(){
+        if (isAlarmActive())
+            setLabelStatusEnabled(fleetManagerStatus);
+        else
+            setLabelStatusDisabled(fleetManagerStatus);
+    }
 
+    private void checkNetworkStatus(){
+        if (isNetworkActive())
+            setLabelStatusEnabled(internetStatus);
+        else
+            setLabelStatusDisabled(internetStatus);
+    }
+
+    private void checkLocationStatus(){
+        if (isLocationServiceActive())
+            setLabelStatusEnabled(locationStatus);
+        else
+            setLabelStatusDisabled(locationStatus);
+    }
+
+    private void checkAllServices(){
+        checkNetworkStatus();
+        checkLocationStatus();
+        checkAlarmStatus();
+    }
+
+    private void setLabelStatusEnabled(TextView textView){
+        textView.setText("Enabled");
+        textView.setTextColor(Color.GREEN);
+    }
+
+    private void setLabelStatusDisabled(TextView textView){
+        textView.setText("Disabled");
+        textView.setTextColor(Color.RED);
     }
 
     @Override
@@ -87,5 +152,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else if (viewID == stopServiceButton.getId()){
             cancelAlarm();
         }
+        checkAllServices();
     }
 }
