@@ -177,11 +177,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //scheduleAlarm();
             startServiceIntent = new Intent(this, LocationTrackingService.class);
             startService(startServiceIntent);
-            //locationTrackingService.startForeground(NOTIFICATION_ID,serviceNotification);
         } else if (viewID == stopServiceButton.getId()){
             //cancelAlarm();
-            //locationTrackingService.stopForeground(true);
-            //locationTrackingService.stopSelf();
             stopService(startServiceIntent);
         }
         //checkAllServices();

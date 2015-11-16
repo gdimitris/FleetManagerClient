@@ -12,6 +12,7 @@ import android.util.Log;
 public class LocationTrackingService extends Service
 {
     private static final String TAG = "LOCATION_TRACKER";
+    private static final String SERVER_URL = "http://4fef2401.ngrok.com/";
     private final int NOTIFICATION_ID = 26373;
     private LocationReceiver locationReceiver;
 
@@ -52,11 +53,17 @@ public class LocationTrackingService extends Service
 
         //A web service will be called and the user's current location will be stored in server
         Log.e(TAG, "sendLocationValues was called");
-        String title = "Device ID: " + PublicHelpers.getDeviceUniqueID(getContentResolver());
+        String deviceID = PublicHelpers.getDeviceUniqueID(getContentResolver());
+        String title = "Device ID: " + deviceID;
         String body = "Current Coordinates: " + theLocation.getLatitude() + "," + theLocation.getLongitude();
 
         Log.e(TAG, "Sending notification...");
         PublicHelpers.sendNotification(this, title, body, NOTIFICATION_ID);
+
+        Long tsLong = System.currentTimeMillis()/1000;
+        String timestamp = tsLong.toString();
+        HttpRequestTask uploadTask = new HttpRequestTask();
+        uploadTask.execute(SERVER_URL+ deviceID,"?lat="+theLocation.getLatitude()+"&lon="+theLocation.getLongitude()+"&time="+timestamp);
     }
 
 
