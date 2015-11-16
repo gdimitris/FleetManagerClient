@@ -6,7 +6,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.location.Location;
 import android.location.LocationManager;
 import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
@@ -155,10 +154,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //updatePositionLabel();
     }
 
-    private void updatePositionLabel(){
-        Location location = locationReceiver.getLocation();
-        currentLocation.setText(location.getLatitude() + ", " + location.getLongitude());
-    }
+//    private void updatePositionLabel(){
+//        Location location = locationReceiver.getLocation();
+//        currentLocation.setText(location.getLatitude() + ", " + location.getLongitude());
+//    }
 
     private void setLabelStatusEnabled(TextView textView){
         textView.setText("Enabled");
@@ -182,7 +181,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else if (viewID == stopServiceButton.getId()){
             //cancelAlarm();
             //locationTrackingService.stopForeground(true);
-            locationTrackingService.stopSelf();
+            //locationTrackingService.stopSelf();
+            stopService(startServiceIntent);
         }
         //checkAllServices();
     }

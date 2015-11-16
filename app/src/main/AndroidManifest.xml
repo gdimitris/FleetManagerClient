@@ -17,19 +17,18 @@
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <receiver
-            android:name=".AlarmReceiver"
-            android:process=":remote">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"></action>
-            </intent-filter>
+        <!--<receiver-->
+            <!--android:name=".AlarmReceiver"-->
+            <!--android:process=":remote">-->
+            <!--&lt;!&ndash;<intent-filter>&ndash;&gt;-->
+                <!--&lt;!&ndash;<action android:name="android.intent.action.BOOT_COMPLETED"></action>&ndash;&gt;-->
+            <!--&lt;!&ndash;</intent-filter>&ndash;&gt;-->
 
-        </receiver>
+        <!--</receiver>-->
 
         <service
             android:name=".UploadCoordsService"
@@ -37,7 +36,12 @@
 
         </service>
 
-        <service android:name=".LocationTrackingService"/>
+        <service
+            android:name=".LocationTrackingService"
+            android:icon="@mipmap/ic_launcher"
+            android:label="LocationTrackingService">
+        </service>
+
     </application>
 
 </manifest>
