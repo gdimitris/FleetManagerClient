@@ -24,7 +24,15 @@ public class UpdateNameActivity extends AppCompatActivity implements View.OnClic
 
         nameText = (EditText) findViewById(R.id.nameEditText);
         surnameText = (EditText) findViewById(R.id.surnameEditText);
+        initializeTextFields();
+    }
 
+    private void initializeTextFields(){
+        String name = PublicHelpers.loadFromPreferences(this, "Name");
+        String surname = PublicHelpers.loadFromPreferences(this, "Surname");
+
+        nameText.setText(name);
+        surnameText.setText(surname);
     }
 
     @Override
