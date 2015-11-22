@@ -22,21 +22,6 @@
             </intent-filter>
         </activity>
 
-        <!--<receiver-->
-            <!--android:name=".AlarmReceiver"-->
-            <!--android:process=":remote">-->
-            <!--&lt;!&ndash;<intent-filter>&ndash;&gt;-->
-                <!--&lt;!&ndash;<action android:name="android.intent.action.BOOT_COMPLETED"></action>&ndash;&gt;-->
-            <!--&lt;!&ndash;</intent-filter>&ndash;&gt;-->
-
-        <!--</receiver>-->
-
-        <service
-            android:name=".UploadCoordsService"
-            android:exported="false">
-
-        </service>
-
         <service
             android:name=".LocationTrackingService"
             android:icon="@mipmap/ic_launcher"

@@ -1,16 +1,11 @@
 package com.android.dimitris.fleetmanagerandroid;
 
-import android.app.AlarmManager;
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.location.LocationManager;
-import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -26,31 +21,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView fleetManagerStatus;
     private TextView internetStatus;
     private TextView locationStatus;
-    private TextView currentLocation;
     private TextView deviceID;
 
-
-    private final int NOTIFICATION_ID = 26373;
-    private LocationReceiver locationReceiver;
-    private LocationTrackingService locationTrackingService;
     private static final long FIVE_MINUTES_IN_MILLIS = 300000L;
-    private Notification serviceNotification;
-    private Intent startServiceIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //locationReceiver = new LocationReceiver(this);
-        serviceNotification = initializeNotification("Location Tracker", "Current Location: None");
-
-
-        locationTrackingService = new LocationTrackingService();
         fleetManagerStatus = (TextView) findViewById(R.id.fleetManagerStatus);
         internetStatus = (TextView) findViewById(R.id.internetAccessStatus);
         locationStatus = (TextView) findViewById(R.id.locationServiceStatus);
-        currentLocation = (TextView) findViewById(R.id.currentPositionTextView);
         deviceID = (TextView) findViewById(R.id.deviceIDTextView);
         deviceID.setText(PublicHelpers.getDeviceUniqueID(getContentResolver()));
 
@@ -59,8 +41,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         stopServiceButton = (Button) findViewById(R.id.stopServiceButton);
         stopServiceButton.setOnClickListener(this);
-
-
 
         checkAllServices();
     }
@@ -87,33 +67,38 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return super.onOptionsItemSelected(item);
     }
 
-    public void scheduleAlarm(){
-        Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
-        final PendingIntent pendingIntent = PendingIntent.getBroadcast(this, AlarmReceiver.REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        long currentTimeMillis = System.currentTimeMillis();
-
-        AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-        alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, currentTimeMillis, FIVE_MINUTES_IN_MILLIS, pendingIntent);
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkAllServices();
     }
 
-    public void cancelAlarm(){
-        Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
-        final PendingIntent pendingIntent = PendingIntent.getBroadcast(this, AlarmReceiver.REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-
-        if (pendingIntent != null) {
-            alarm.cancel(pendingIntent);
-            pendingIntent.cancel();
-        }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        checkAllServices();
     }
 
-    private boolean isAlarmActive(){
-        Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, AlarmReceiver.REQUEST_CODE, intent, PendingIntent.FLAG_NO_CREATE);
-
-        return ( pendingIntent!= null);
-    }
+//    public void scheduleAlarm(){
+//        Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
+//        final PendingIntent pendingIntent = PendingIntent.getBroadcast(this, AlarmReceiver.REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+//        long currentTimeMillis = System.currentTimeMillis();
+//
+//        AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+//        alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, currentTimeMillis, FIVE_MINUTES_IN_MILLIS, pendingIntent);
+//    }
+//
+//    public void cancelAlarm(){
+//        Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
+//        final PendingIntent pendingIntent = PendingIntent.getBroadcast(this, AlarmReceiver.REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+//
+//        AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+//
+//        if (pendingIntent != null) {
+//            alarm.cancel(pendingIntent);
+//            pendingIntent.cancel();
+//        }
+//    }
 
     private boolean isNetworkActive(){
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -126,8 +111,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 
-    private void checkAlarmStatus(){
-        if (isAlarmActive())
+    private void checkLocationTrackingStatus(){
+        if (LocationTrackingService.isRunning)
             setLabelStatusEnabled(fleetManagerStatus);
         else
             setLabelStatusDisabled(fleetManagerStatus);
@@ -150,14 +135,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void checkAllServices(){
         checkNetworkStatus();
         checkLocationStatus();
-        checkAlarmStatus();
-        //updatePositionLabel();
+        checkLocationTrackingStatus();
     }
-
-//    private void updatePositionLabel(){
-//        Location location = locationReceiver.getLocation();
-//        currentLocation.setText(location.getLatitude() + ", " + location.getLongitude());
-//    }
 
     private void setLabelStatusEnabled(TextView textView){
         textView.setText("Enabled");
@@ -174,28 +153,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int viewID = v.getId();
 
         if(viewID == startServiceButton.getId()){
-            //scheduleAlarm();
-            startServiceIntent = new Intent(this, LocationTrackingService.class);
-            startService(startServiceIntent);
+            Intent startIntent = new Intent(this, LocationTrackingService.class);
+            startService(startIntent);
         } else if (viewID == stopServiceButton.getId()){
-            //cancelAlarm();
-            stopService(startServiceIntent);
+            Intent stopIntent = new Intent(this, LocationTrackingService.class);
+            stopService(stopIntent);
         }
-        //checkAllServices();
-    }
-
-    private Notification initializeNotification(String title, String body){
-        Notification.Builder mBuilder = new Notification.Builder(this);
-        Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-
-        mBuilder.setSmallIcon(R.mipmap.ic_launcher)
-                .setOngoing(true)
-                .setContentTitle(title)
-                .setContentText(body)
-                .setPriority(Notification.PRIORITY_MAX)
-                .setSound(soundUri)
-                .setDefaults(Notification.DEFAULT_ALL);
-
-        return mBuilder.build();
+        checkAllServices();
     }
 }

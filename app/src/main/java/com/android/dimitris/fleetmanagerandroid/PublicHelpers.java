@@ -28,9 +28,7 @@ public class PublicHelpers {
         mBuilder.setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(title)
                 .setContentText(body)
-                .setPriority(Notification.PRIORITY_MAX)
-                .setSound(soundUri)
-                .setDefaults(Notification.DEFAULT_ALL);
+                .setPriority(Notification.PRIORITY_LOW);
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(notificationID, mBuilder.build());

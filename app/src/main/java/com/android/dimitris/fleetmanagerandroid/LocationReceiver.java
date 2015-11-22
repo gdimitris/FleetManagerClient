@@ -15,11 +15,14 @@ public class LocationReceiver implements LocationListener {
     private Location latestLocation;
     private LocationTrackingService service;
 
+    private static int EIGHT_METERS = 8;
+    private static int FIVE_SECONDS = 5000;
+
 
     public LocationReceiver(LocationTrackingService locationTrackingService){
         service = locationTrackingService;
         locationManager = (LocationManager) service.getSystemService(Context.LOCATION_SERVICE);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, FIVE_SECONDS, EIGHT_METERS, this);
         //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0,this);
     }
 

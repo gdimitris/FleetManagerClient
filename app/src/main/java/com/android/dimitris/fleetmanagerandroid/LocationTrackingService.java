@@ -13,8 +13,10 @@ public class LocationTrackingService extends Service
 {
     private static final String TAG = "LOCATION_TRACKER";
     private static final String SERVER_URL = "http://4fef2401.ngrok.com/";
+    //private static final String SERVER_URL = "https://dimitrisg.pythonanywhere.com/";
     private final int NOTIFICATION_ID = 26373;
     private LocationReceiver locationReceiver;
+    public static boolean isRunning = false;
 
 
     @Override
@@ -22,6 +24,7 @@ public class LocationTrackingService extends Service
     {
         super.onStartCommand(intent, flags, startId);
         Log.e(TAG,"onStart was called!");
+        isRunning = true;
         return START_STICKY;
     }
 
@@ -30,6 +33,7 @@ public class LocationTrackingService extends Service
     {
         Log.e(TAG, "onCreate was called");
         locationReceiver = new LocationReceiver(this);
+        isRunning = true;
     }
 
 
@@ -39,6 +43,7 @@ public class LocationTrackingService extends Service
         Log.e(TAG,"onDestroy was Called!");
         super.onDestroy();
         locationReceiver.stopListeningToLocationChanges();
+        isRunning = false;
         stopSelf();
     }
 
