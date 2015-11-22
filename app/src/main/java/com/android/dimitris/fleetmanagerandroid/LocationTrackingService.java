@@ -12,7 +12,7 @@ import android.util.Log;
 public class LocationTrackingService extends Service
 {
     private static final String TAG = "LOCATION_TRACKER";
-    private static final String SERVER_URL = "http://4fef2401.ngrok.com/";
+    //private static final String SERVER_URL = "http://4fef2401.ngrok.com/";
     //private static final String SERVER_URL = "https://dimitrisg.pythonanywhere.com/";
     private final int NOTIFICATION_ID = 26373;
     private LocationReceiver locationReceiver;
@@ -22,18 +22,18 @@ public class LocationTrackingService extends Service
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
+        isRunning = true;
         super.onStartCommand(intent, flags, startId);
         Log.e(TAG,"onStart was called!");
-        isRunning = true;
         return START_STICKY;
     }
 
     @Override
     public void onCreate()
     {
+        isRunning = true;
         Log.e(TAG, "onCreate was called");
         locationReceiver = new LocationReceiver(this);
-        isRunning = true;
     }
 
 
@@ -55,6 +55,8 @@ public class LocationTrackingService extends Service
 
     public void sendLocationValues(Location theLocation)
     {
+        if(theLocation == null)
+            return;
 
         //A web service will be called and the user's current location will be stored in server
         Log.e(TAG, "sendLocationValues was called");
@@ -68,7 +70,8 @@ public class LocationTrackingService extends Service
         Long tsLong = System.currentTimeMillis()/1000;
         String timestamp = tsLong.toString();
         HttpRequestTask uploadTask = new HttpRequestTask();
-        uploadTask.execute(SERVER_URL+ deviceID,"?lat="+theLocation.getLatitude()+"&lon="+theLocation.getLongitude()+"&time="+timestamp);
+        String url = getResources().getString(R.string.server_url);
+        uploadTask.execute(url+ deviceID,"?lat="+theLocation.getLatitude()+"&lon="+theLocation.getLongitude()+"&time="+timestamp);
     }
 
 

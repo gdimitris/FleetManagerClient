@@ -3,4 +3,6 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_update_name">UpdateNameActivity</string>
+    <string name="server_url">http://4fef2401.ngrok.com/</string>
 </resources>

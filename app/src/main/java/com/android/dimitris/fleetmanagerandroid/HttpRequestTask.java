@@ -14,7 +14,6 @@ import java.net.URL;
  */
 public class HttpRequestTask extends AsyncTask<String, Void, Void> {
 
-
     @Override
     protected Void doInBackground(String... params) {
         HttpURLConnection connection = null;

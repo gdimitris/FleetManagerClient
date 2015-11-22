@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView internetStatus;
     private TextView locationStatus;
     private TextView deviceID;
+    private TextView fullNameView;
 
     private static final long FIVE_MINUTES_IN_MILLIS = 300000L;
 
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        fullNameView = (TextView) findViewById(R.id.nameTextView);
         fleetManagerStatus = (TextView) findViewById(R.id.fleetManagerStatus);
         internetStatus = (TextView) findViewById(R.id.internetAccessStatus);
         locationStatus = (TextView) findViewById(R.id.locationServiceStatus);
@@ -41,7 +43,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         stopServiceButton = (Button) findViewById(R.id.stopServiceButton);
         stopServiceButton.setOnClickListener(this);
-
         checkAllServices();
     }
 
@@ -61,7 +62,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            Intent intent = new Intent(this, UpdateNameActivity.class);
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
@@ -133,6 +135,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void checkAllServices(){
+        checkName();
         checkNetworkStatus();
         checkLocationStatus();
         checkLocationTrackingStatus();
@@ -153,12 +156,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int viewID = v.getId();
 
         if(viewID == startServiceButton.getId()){
-            Intent startIntent = new Intent(this, LocationTrackingService.class);
-            startService(startIntent);
+            if(isNameSetInPreferences())
+                startLocationTrackingService();
+            else {
+                Intent intent = new Intent(this, UpdateNameActivity.class);
+                startActivity(intent);
+            }
         } else if (viewID == stopServiceButton.getId()){
-            Intent stopIntent = new Intent(this, LocationTrackingService.class);
-            stopService(stopIntent);
+            stopLocationTrackingService();
         }
-        checkAllServices();
+    }
+
+    private void stopLocationTrackingService() {
+        Intent stopIntent = new Intent(this, LocationTrackingService.class);
+        stopService(stopIntent);
+        setLabelStatusDisabled(fleetManagerStatus);
+    }
+
+    private void startLocationTrackingService() {
+        Intent startIntent = new Intent(this, LocationTrackingService.class);
+        startService(startIntent);
+        setLabelStatusEnabled(fleetManagerStatus);
+    }
+
+    private boolean isNameSetInPreferences(){
+        String name = PublicHelpers.loadFromPreferences(this,"Name");
+        String surname = PublicHelpers.loadFromPreferences(this, "Surname");
+
+        return (!name.equals("") && !surname.equals(""));
+    }
+
+    private void checkName(){
+        String name = PublicHelpers.loadFromPreferences(this, "Name");
+        String surname = PublicHelpers.loadFromPreferences(this, "Surname");
+
+        fullNameView.setText(name + " " + surname);
     }
 }

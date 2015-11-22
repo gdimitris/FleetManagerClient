@@ -4,8 +4,10 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 
 /**
@@ -32,5 +34,18 @@ public class PublicHelpers {
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(notificationID, mBuilder.build());
+    }
+
+    public static void saveInPreferences(Context context, String key, String value){
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(key,value);
+        editor.commit();
+    }
+
+    public static String loadFromPreferences(Context context, String key){
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return preferences.getString(key,"");
     }
 }
