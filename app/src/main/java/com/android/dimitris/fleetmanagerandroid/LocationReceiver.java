@@ -20,6 +20,7 @@ public class LocationReceiver implements LocationListener {
     private LocationTrackingService service;
 
     private static int TEN_METERS = 10;
+    private static int TWO_METERS = 2;
     private static int FIVE_MINUTES = 1000 * 60 * 5;
     private static final int TWO_MINUTES = 1000 * 60 * 2;
 
@@ -29,12 +30,12 @@ public class LocationReceiver implements LocationListener {
         locationManager = (LocationManager) service.getSystemService(Context.LOCATION_SERVICE);
         registerForNetworkLocationUpdates();
         registerForGPSLocationUpdates();
-        examineNewLocation(getLastPosition());
+        //examineNewLocation(getLastPosition());
     }
 
     private void registerForGPSLocationUpdates(){
         try {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, FIVE_MINUTES, TEN_METERS, this);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 15, this);
         } catch (Exception e){
             Log.e("Location Manager", e.getMessage());
             Toast.makeText(service,"Please enable GPS Provider. Failed to get signal", Toast.LENGTH_LONG).show();
@@ -43,7 +44,7 @@ public class LocationReceiver implements LocationListener {
 
     private void registerForNetworkLocationUpdates() {
         try {
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, FIVE_MINUTES, TEN_METERS, this);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 15, this);
         } catch (Exception e){
             Log.e("Location Manager",e.getMessage());
             Toast.makeText(service,"Please enable Network Access. Failed to get signal", Toast.LENGTH_LONG).show();
