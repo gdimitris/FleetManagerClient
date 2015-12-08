@@ -33,6 +33,9 @@
             android:name=".UpdateNameActivity"
             android:label="@string/title_activity_update_name" >
         </activity>
+
+        <activity android:name=".SettingsActivity">
+        </activity>
     </application>
 
 </manifest>

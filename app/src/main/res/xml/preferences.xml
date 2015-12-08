@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+        android:key="distance_updates"
+        android:title="Distance Update"
+        android:entries="@array/distance_names"
+        android:entryValues="@array/distance_values">
+    </ListPreference>
+
+    <Preference
+        android:key="version"
+        android:title="Current App Version"
+        android:text="1.0.0"
+        android:summary="1.0.0"
+        android:editable="false"
+        android:clickable="false"/>
+
+</PreferenceScreen>

@@ -50,7 +50,7 @@ public class UpdateNameActivity extends AppCompatActivity implements View.OnClic
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_update_name) {
             return true;
         }
 
