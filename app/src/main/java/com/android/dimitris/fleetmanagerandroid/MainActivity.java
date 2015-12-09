@@ -84,27 +84,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         checkAllServices();
     }
 
-//    public void scheduleAlarm(){
-//        Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
-//        final PendingIntent pendingIntent = PendingIntent.getBroadcast(this, AlarmReceiver.REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-//        long currentTimeMillis = System.currentTimeMillis();
-//
-//        AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-//        alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, currentTimeMillis, FIVE_MINUTES_IN_MILLIS, pendingIntent);
-//    }
-//
-//    public void cancelAlarm(){
-//        Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
-//        final PendingIntent pendingIntent = PendingIntent.getBroadcast(this, AlarmReceiver.REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-//
-//        AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-//
-//        if (pendingIntent != null) {
-//            alarm.cancel(pendingIntent);
-//            pendingIntent.cancel();
-//        }
-//    }
-
     private boolean isNetworkActive(){
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();

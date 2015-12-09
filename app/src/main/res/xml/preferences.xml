@@ -16,4 +16,7 @@
         android:editable="false"
         android:clickable="false"/>
 
+    <Preference
+        android:key="update"
+        android:title="Download Latest App Version"/>
 </PreferenceScreen>
