@@ -1,5 +1,8 @@
 package com.android.dimitris.fleetmanagerandroid;
 
+import android.app.DownloadManager;
+import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -28,6 +31,7 @@ public class SettingsActivity extends PreferenceActivity{
     }
 
     public static class SettingsFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener{
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -40,10 +44,18 @@ public class SettingsActivity extends PreferenceActivity{
         public boolean onPreferenceClick(Preference preference) {
             String key = preference.getKey();
             if(key.equals("update")){
-
+                requestDownloadForNewApk();
                 return true;
             }
             return false;
+        }
+
+        private void requestDownloadForNewApk() {
+            DownloadManager downloadManager = (DownloadManager) getActivity().getSystemService(DOWNLOAD_SERVICE);
+            DownloadManager.Request request = new DownloadManager.Request(Uri.parse("https://4fef2401.ngrok.com/content/current_version.apk"));
+            long enqueue = downloadManager.enqueue(request);
+            ApkUpdateReceiver receiver = new ApkUpdateReceiver(downloadManager,enqueue);
+            getActivity().registerReceiver(receiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
         }
     }
 }
