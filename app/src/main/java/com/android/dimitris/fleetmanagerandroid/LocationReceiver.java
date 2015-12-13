@@ -1,10 +1,12 @@
 package com.android.dimitris.fleetmanagerandroid;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -19,8 +21,6 @@ public class LocationReceiver implements LocationListener {
     private Location currentBestLocation = null;
     private LocationTrackingService service;
 
-    private static int TEN_METERS = 10;
-    private static int TWO_METERS = 2;
     private static int FIVE_MINUTES = 1000 * 60 * 5;
     private static final int TWO_MINUTES = 1000 * 60 * 2;
 
@@ -30,12 +30,15 @@ public class LocationReceiver implements LocationListener {
         locationManager = (LocationManager) service.getSystemService(Context.LOCATION_SERVICE);
         registerForNetworkLocationUpdates();
         registerForGPSLocationUpdates();
-        //examineNewLocation(getLastPosition());
     }
 
     private void registerForGPSLocationUpdates(){
         try {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 15, this);
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(service);
+            String preferredValueString = preferences.getString("distance_updates","15");
+            int preferredValue = Integer.parseInt(preferredValueString);
+            Log.e("GPS Location Manager", "Starting with accuracy "+preferredValue+" meters");
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, preferredValue, this);
         } catch (Exception e){
             Log.e("Location Manager", e.getMessage());
             Toast.makeText(service,"Please enable GPS Provider. Failed to get signal", Toast.LENGTH_LONG).show();
@@ -44,7 +47,11 @@ public class LocationReceiver implements LocationListener {
 
     private void registerForNetworkLocationUpdates() {
         try {
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 15, this);
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(service);
+            String preferredValueString = preferences.getString("distance_updates","15");
+            int preferredValue = Integer.parseInt(preferredValueString);
+            Log.e("GPS Location Manager", "Starting with accuracy "+preferredValue+" meters");
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, preferredValue, this);
         } catch (Exception e){
             Log.e("Location Manager",e.getMessage());
             Toast.makeText(service,"Please enable Network Access. Failed to get signal", Toast.LENGTH_LONG).show();
@@ -149,6 +156,13 @@ public class LocationReceiver implements LocationListener {
             currentBestLocation = location;
             service.sendLocationValues(currentBestLocation);
         }
+    }
+
+    public void restartReceiver(){
+        Log.e("LocationReceiver", "Restarting Location Receiver...");
+        stopListeningToLocationChanges();
+        registerForGPSLocationUpdates();
+        registerForNetworkLocationUpdates();
     }
 
 }

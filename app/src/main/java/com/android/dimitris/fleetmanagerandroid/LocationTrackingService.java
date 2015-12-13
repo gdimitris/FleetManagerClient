@@ -2,14 +2,16 @@ package com.android.dimitris.fleetmanagerandroid;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 /**
  * Created by dimitris on 11/15/15.
  */
-public class LocationTrackingService extends Service
+public class LocationTrackingService extends Service implements SharedPreferences.OnSharedPreferenceChangeListener
 {
     private static final String TAG = "LOCATION_TRACKER";
     //private static final String SERVER_URL = "http://4fef2401.ngrok.com/";
@@ -24,6 +26,8 @@ public class LocationTrackingService extends Service
     {
         isRunning = true;
         super.onStartCommand(intent, flags, startId);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs.registerOnSharedPreferenceChangeListener(this);
         Log.e(TAG,"onStart was called!");
         return START_STICKY;
     }
@@ -75,5 +79,10 @@ public class LocationTrackingService extends Service
     }
 
 
-
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if(key.equals("distance_updates")){
+            locationReceiver.restartReceiver();
+        }
+    }
 }

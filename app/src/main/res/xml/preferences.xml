@@ -9,8 +9,16 @@
     </ListPreference>
 
     <Preference
-        android:key="version"
+        android:key="current_version"
         android:title="Current App Version"
+        android:text="1.0.0"
+        android:summary="1.0.0"
+        android:editable="false"
+        android:clickable="false"/>
+
+    <Preference
+        android:key="latest_version"
+        android:title="Latest App Version"
         android:text="1.0.0"
         android:summary="1.0.0"
         android:editable="false"

@@ -5,4 +5,6 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_update_name">UpdateNameActivity</string>
     <string name="server_url">https://dimitrisg.pythonanywhere.com/</string>
+    <!--<string name="server_url">https://4aa89eb8.ngrok.io/</string>-->
+    <string name="debug_server_url">https://4fef2401.ngrok.com/</string>
 </resources>

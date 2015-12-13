@@ -32,6 +32,8 @@ public class SettingsActivity extends PreferenceActivity{
 
     public static class SettingsFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener{
 
+        private static final String APK_SERVER_PATH = "content/current_version.apk";
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -52,7 +54,8 @@ public class SettingsActivity extends PreferenceActivity{
 
         private void requestDownloadForNewApk() {
             DownloadManager downloadManager = (DownloadManager) getActivity().getSystemService(DOWNLOAD_SERVICE);
-            DownloadManager.Request request = new DownloadManager.Request(Uri.parse("https://4fef2401.ngrok.com/content/current_version.apk"));
+            String fullServerPath = getString(R.string.server_url)+APK_SERVER_PATH;
+            DownloadManager.Request request = new DownloadManager.Request(Uri.parse(fullServerPath));
             long enqueue = downloadManager.enqueue(request);
             ApkUpdateReceiver receiver = new ApkUpdateReceiver(downloadManager,enqueue);
             getActivity().registerReceiver(receiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
